@@ -1,27 +1,34 @@
+version: "3.9"
 
 services:
+  mysql:
+    image: mysql:5.7
+    container_name: lavagna-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   lavagna:
-    container_name: lavagna
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      DB_DIALECT: "org.hibernate.dialect.PostgreSQLDialect"
-      DB_URL: "jdbc:postgresql://db:5432/lavagna"
-      DB_USER: "lavagna_user"
-      DB_PASS: "lavagna_pass"
-      SPRING_PROFILE: "prod"
+    container_name: lavagna-app
     depends_on:
-      - db
-
-  db:
-    image: postgres:13
-    container_name: lavagna_db
+      - mysql
+    ports:
+      - "${APP_PORT}:8080"
     environment:
-      POSTGRES_DB: "lavagna"
-      POSTGRES_USER: "lavagna_user"
-      POSTGRES_PASSWORD: "lavagna_pass"
-    volumes:
-      - db_data:/var/lib/postgresql/data
+      DB_DIALECT: ${DB_DIALECT}
+      DB_HOST: ${DB_HOST}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      SPRING_PROFILE: ${SPRING_PROFILE}
+
+volumes:
+  mysql_data:
