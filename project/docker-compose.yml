@@ -28,7 +28,17 @@ services:
       DB_URL: ${DB_URL}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
-      SPRING_PROFILE: ${SPRING_PROFILE}
+  nginx:
+      image: nginx:alpine
+      container_name: lavagna-nginx
+      ports:
+        - "80:80"
+      volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./project/src/main/webapp:/webapp
+      depends_on:
+        - lavagna
 
 volumes:
   mysql_data:
