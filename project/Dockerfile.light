@@ -1,0 +1,23 @@
+FROM maven:3.9.4-eclipse-temurin-8 AS builder
+
+WORKDIR /app
+
+COPY pom.xml /app/
+COPY src /app/src
+COPY LICENSE-GPLv3.txt /app/
+COPY entrypoint.sh /app/entrypoint.sh
+
+RUN mvn clean package -DskipTests
+
+
+FROM eclipse-temurin:8-jre-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/target/lavagna-jetty-console.war /app/target/lavagna-jetty-console.war
+COPY --from=builder /app/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -16,7 +16,7 @@ services:
   lavagna:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.light
     container_name: lavagna-app
     depends_on:
       - mysql
