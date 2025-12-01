@@ -7,14 +7,15 @@ COPY src /app/src
 COPY LICENSE-GPLv3.txt /app/
 COPY entrypoint.sh /app/entrypoint.sh
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package stampo:build -DskipTests
 
 
 FROM eclipse-temurin:8-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/target/lavagna-jetty-console.war /app/target/lavagna-jetty-console.war
+COPY --from=builder /app/target/ /app/target/
+COPY --from=builder /app/target/lavagna/help /app/help
 COPY --from=builder /app/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
